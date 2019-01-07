@@ -102,6 +102,10 @@ func (d Data) AssignTo(pointer interface{}) (err error) {
 	case *float64:
 		*p = data.Float()
 	case *string:
+		if from.Kind() != reflect.String {
+			return fmt.Errorf("value.Data: invalid cast of %v to string",
+				from.Kind())
+		}
 		*p = data.String()
 	case *time.Duration:
 		*p = time.Duration(data.Int())

@@ -290,4 +290,17 @@ func TestData_AssignTo(t *testing.T) {
 			t.Errorf("Unexpected error assigning to value: %s", err.Error())
 		}
 	})
+
+	t.Run("assignTo will not cast non string values", func(t *testing.T) {
+		var p string
+		var v int
+		d := value.New(&v)
+		err := d.AssignTo(&p)
+
+		expected := "value.Data: invalid cast of int to string"
+		if err == nil || err.Error() != expected {
+			t.Errorf("Unexpected error assigning to value: %s", err.Error())
+		}
+	})
 }
+
