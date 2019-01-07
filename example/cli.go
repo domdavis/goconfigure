@@ -25,13 +25,13 @@ func main() {
 		"The number of times to display the message")
 	opt.LongFlag("count")
 	opt.ConfigKey("count")
+	opt.EnvVar("GOCONFIGURE_COUNT")
 	opt.Default(1)
 	opts.Add(opt)
 
 	opt = goconfigure.NewOption(&options.config,
 		"The path to the configuration file")
 	opt.ShortFlag('o')
-	opt.Default("./options.json")
 	opts.Add(opt)
 
 	if err := opts.ParseUsing(opt); err != nil {
