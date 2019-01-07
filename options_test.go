@@ -50,9 +50,9 @@ func ExampleNewOptionsWithArgs() {
 
 func ExampleOptions_ParseUsing() {
 	var options struct {
-		config string
-		numeric int
-		text string
+		config     string
+		numeric    int
+		text       string
 		overridden string
 	}
 
@@ -92,14 +92,14 @@ func ExampleOptions_ParseUsing() {
 func ExampleOptions_Add() {
 	var opt goconfigure.Option
 	var options struct {
-		boolean  bool
-		integer  int
-		long     int64
-		unsigned uint
+		boolean      bool
+		integer      int
+		long         int64
+		unsigned     uint
 		unsignedLong uint64
-		float    float64
-		text     string
-		duration time.Duration
+		float        float64
+		text         string
+		duration     time.Duration
 	}
 
 	opts := goconfigure.NewOptionsWithArgs([]string{
@@ -239,7 +239,7 @@ func TestOptions_ParseUsing(t *testing.T) {
 		opts.Add(opt)
 		err := opts.ParseUsing(opt)
 
-		expected := fmt.Sprintf("error parsing config %s: json: cannot " +
+		expected := fmt.Sprintf("error parsing config %s: json: cannot "+
 			"unmarshal array into Go value of type map[string]interface {}",
 			path)
 
@@ -250,7 +250,7 @@ func TestOptions_ParseUsing(t *testing.T) {
 
 	t.Run("Parsing with an incorrect config will error", func(t *testing.T) {
 		var config struct {
-			file string
+			file  string
 			value int
 		}
 
@@ -288,5 +288,12 @@ func TestOptions_ParseUsing(t *testing.T) {
 		if err == nil || err.Error() != expected {
 			t.Errorf("unexpected error parsing options: %v", err)
 		}
+	})
+}
+
+func TestOptions_Usage(t *testing.T) {
+	t.Run("An empty options wont panic when running usage", func(t *testing.T) {
+		opts := goconfigure.NewOptions()
+		opts.Usage()
 	})
 }

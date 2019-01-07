@@ -11,9 +11,18 @@ import (
 // Options holds a set of configuration options which can be provided by the
 // command line, environment variables, configuration files, or default values.
 type Options interface {
+	// Add an option to this set of Options.
 	Add(option Option)
+
+	// Parse the Options using the provided map for configuration options.
 	Parse(config map[string]interface{}) error
+
+	// ParseUsing uses the given Option to locate and load the configuration
+	// from a file.
 	ParseUsing(option Option) error
+
+	// Display the usage information for this set of options.
+	Usage()
 }
 
 type options struct {
@@ -31,18 +40,18 @@ func NewOptions() Options {
 // NewOptionsWithArgs returns a new Options type that uses the given slice of
 // strings as its argument set.
 func NewOptionsWithArgs(args []string) Options {
+	flags := flag.NewFlagSet(os.Args[0], flag.ContinueOnError)
+	flags.Usage = func() {}
 	return &options{
-		flags: flag.NewFlagSet(os.Args[0], flag.ContinueOnError),
+		flags: flags,
 		args:  args,
 	}
 }
 
-// Add an option to this set of Options.
 func (o *options) Add(option Option) {
 	o.data = append(o.data, option)
 }
 
-// Parse the Options using the provided map for configuration options.
 func (o *options) Parse(config map[string]interface{}) error {
 	if err := o.parseFlags(); err != nil {
 		return fmt.Errorf("config error: %s", err)
@@ -55,8 +64,6 @@ func (o *options) Parse(config map[string]interface{}) error {
 	return nil
 }
 
-// ParseUsing uses the given Option to locate and load the configuration from a
-// file.
 func (o *options) ParseUsing(option Option) error {
 	var file string
 	config := map[string]interface{}{}
@@ -85,6 +92,11 @@ func (o *options) ParseUsing(option Option) error {
 	}
 
 	return nil
+}
+
+func (o *options) Usage() {
+	_, _ = fmt.Fprintf(o.flags.Output(), "Usage of %s:\n", os.Args[0])
+	o.flags.PrintDefaults()
 }
 
 func (o *options) parseFlags() error {
