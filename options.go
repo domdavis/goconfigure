@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"io/ioutil"
 	"os"
+	"strings"
 )
 
 // Options holds a set of configuration options which can be provided by the
@@ -21,8 +22,11 @@ type Options interface {
 	// from a file.
 	ParseUsing(option Option) error
 
-	// Display the usage information for this set of options.
+	// Usage displays the usage information for this set of options to STDERR.
 	Usage()
+
+	// UsageString returns the string displayed by Usage
+	UsageString() string
 }
 
 type options struct {
@@ -95,8 +99,25 @@ func (o *options) ParseUsing(option Option) error {
 }
 
 func (o *options) Usage() {
-	_, _ = fmt.Fprintf(o.flags.Output(), "Usage of %s:\n", os.Args[0])
-	o.flags.PrintDefaults()
+	_, _ = fmt.Fprint(os.Stderr, o.UsageString())
+}
+
+func (o *options) UsageString() string {
+	b := strings.Builder{}
+	b.WriteString("Usage of ")
+	b.WriteString(os.Args[0])
+	b.WriteString(":\n")
+
+	for _, opt := range o.data {
+		b.WriteString(opt.String())
+	}
+
+	if len(o.data) == 0 {
+		b.WriteString("    \tNo configuration options set")
+	}
+
+	b.WriteString("\n")
+	return b.String()
 }
 
 func (o *options) parseFlags() error {

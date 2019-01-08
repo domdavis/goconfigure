@@ -237,3 +237,83 @@ func TestOption_Parse(t *testing.T) {
 		}
 	})
 }
+
+func TestOption_String(t *testing.T) {
+	t.Run("No flags will be handled correctly", func(t *testing.T) {
+		s := goconfigure.NewOption(nil, "An Example").String()
+
+		if !strings.Contains(s, "No CLI option") {
+			t.Errorf("unexpected usage string:\n%s", s)
+		}
+	})
+
+	t.Run("Short and long flags will be shown", func(t *testing.T) {
+		opt := goconfigure.NewOption(nil, "An Example")
+		opt.Flags('f', "flag")
+		s := opt.String()
+
+		if !strings.Contains(s, "-f, --flag") {
+			t.Errorf("unexpected usage string:\n%s", s)
+		}
+	})
+
+	t.Run("Short flags will be shown", func(t *testing.T) {
+		opt := goconfigure.NewOption(nil, "An Example")
+		opt.ShortFlag('f')
+		s := opt.String()
+
+		if !strings.Contains(s, "-f") {
+			t.Errorf("unexpected usage string:\n%s", s)
+		}
+	})
+
+	t.Run("Long flags will be shown", func(t *testing.T) {
+		opt := goconfigure.NewOption(nil, "An Example")
+		opt.LongFlag("flag")
+		s := opt.String()
+
+		if !strings.Contains(s, "--flag") {
+			t.Errorf("unexpected usage string:\n%s", s)
+		}
+	})
+
+	t.Run("String defaults will be quoted", func(t *testing.T) {
+		opt := goconfigure.NewOption("", "An Example")
+		opt.Default("default")
+		s := opt.String()
+
+		if !strings.Contains(s, "(default \"default\")") {
+			t.Errorf("unexpected usage string:\n%s", s)
+		}
+	})
+
+	t.Run("Non-string defaults will not be quoted", func(t *testing.T) {
+		opt := goconfigure.NewOption(nil, "An Example")
+		opt.Default(1)
+		s := opt.String()
+
+		if !strings.Contains(s, "(default 1)") {
+			t.Errorf("unexpected usage string:\n%s", s)
+		}
+	})
+
+	t.Run("Environment variables will be displayed", func(t *testing.T) {
+		opt := goconfigure.NewOption(nil, "An Example")
+		opt.EnvVar("TEST_ENV")
+		s := opt.String()
+
+		if !strings.Contains(s, "TEST_ENV") {
+			t.Errorf("unexpected usage string:\n%s", s)
+		}
+	})
+	
+	t.Run("Config options will be displayed", func(t *testing.T) {
+		opt := goconfigure.NewOption(nil, "An Example")
+		opt.ConfigKey("key")
+		s := opt.String()
+
+		if !strings.Contains(s, "key") {
+			t.Errorf("unexpected usage string:\n%s", s)
+		}
+	})
+}

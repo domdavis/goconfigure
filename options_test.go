@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"github.com/domdavis/goconfigure"
 	"path/filepath"
+	"strings"
 	"testing"
 	"time"
 )
@@ -295,5 +296,26 @@ func TestOptions_Usage(t *testing.T) {
 	t.Run("An empty options wont panic when running usage", func(t *testing.T) {
 		opts := goconfigure.NewOptions()
 		opts.Usage()
+	})
+}
+
+func TestOptions_UsageString(t *testing.T) {
+	t.Run("Usage handles no options", func(t *testing.T) {
+		opts := goconfigure.NewOptions()
+		s := opts.UsageString()
+
+		if !strings.Contains(s, "No configuration options set") {
+			t.Errorf("Unexpted usage output: %s", s)
+		}
+	})
+
+	t.Run("Usage handles options", func(t *testing.T) {
+		opts := goconfigure.NewOptions()
+		opts.Add(goconfigure.NewOption(nil, "Test option"))
+		s := opts.UsageString()
+
+		if !strings.Contains(s, "Test option") {
+			t.Errorf("Unexpted usage output: %s", s)
+		}
 	})
 }

@@ -6,6 +6,7 @@ import (
 	"github.com/domdavis/goconfigure/value"
 	"os"
 	"reflect"
+	"strings"
 	"time"
 )
 
@@ -86,6 +87,9 @@ type Option interface {
 	// Parse this option with the provided config. In general Parse only needs
 	// to be called by a parent Options type.
 	Parse(config map[string]interface{}) error
+
+	// Output the option as a human readable and formatted string.
+	String() string
 }
 
 type option struct {
@@ -236,6 +240,48 @@ func (o *option) Parse(config map[string]interface{}) error {
 	}
 
 	return nil
+}
+
+func (o *option) String() string {
+	b := strings.Builder{}
+	b.WriteString("\n  ")
+
+	switch {
+	case o.shortFlag == 0 && o.longFlag == "":
+		b.WriteString("No CLI option")
+	case o.shortFlag != 0 && o.longFlag != "":
+		b.WriteString(fmt.Sprintf("-%c, --%s", o.shortFlag, o.longFlag))
+	case o.shortFlag != 0:
+		b.WriteString(fmt.Sprintf("-%c", o.shortFlag))
+	case o.longFlag != "":
+		b.WriteString(fmt.Sprintf("--%s", o.longFlag))
+	}
+
+	b.WriteString("\n    \t")
+	b.WriteString(strings.Replace(o.description, "\n", "\n    \t", -1))
+
+	isString := o.typeOf != nil && o.typeOf.Kind() == reflect.String
+
+	switch {
+	case o.backstop != nil && isString:
+		b.WriteString(fmt.Sprintf(" (default %q)", o.backstop))
+	case o.backstop != nil:
+		b.WriteString(fmt.Sprintf(" (default %v)", o.backstop))
+	}
+
+	if o.envVar != "" {
+		b.WriteString("\n    \tUse $")
+		b.WriteString(o.envVar)
+		b.WriteString(" to set this using environment variables.")
+	}
+
+	if o.configKey != "" {
+		b.WriteString("\n    \tUse '")
+		b.WriteString(o.configKey)
+		b.WriteString("' to set this in the config file.")
+	}
+
+	return b.String()
 }
 
 func (o *option) registerFlag(name string) (value.Data, error) {
