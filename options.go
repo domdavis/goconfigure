@@ -33,7 +33,8 @@ type Options interface {
 	// Usage displays the usage information for this set of options to STDERR.
 	Usage()
 
-	// UsageString returns the string displayed by Usage
+	// UsageString building of custom usage output by providing just the usage
+	//
 	UsageString() string
 }
 
@@ -115,14 +116,16 @@ func (o *options) Args() []string {
 }
 
 func (o *options) Usage() {
-	_, _ = fmt.Fprint(os.Stderr, o.UsageString())
-}
-
-func (o *options) UsageString() string {
 	b := strings.Builder{}
 	b.WriteString("Usage of ")
 	b.WriteString(os.Args[0])
 	b.WriteString(":\n")
+	b.WriteString(o.UsageString())
+	_, _ = fmt.Fprint(os.Stderr, b.String())
+}
+
+func (o *options) UsageString() string {
+	b := strings.Builder{}
 
 	for _, opt := range o.data {
 		b.WriteString(opt.String())
