@@ -322,7 +322,8 @@ func (o *option) registerFlag(name string) (value.Data, error) {
 		f = func() interface{} { return o.flags.Duration(name, v, o.description) }
 		ok = success
 	default:
-		return value.Data{}, fmt.Errorf("invalid option type: %T", o.pointer)
+		return value.Data{}, fmt.Errorf("invalid option type for flag %q: %T",
+			name, o.pointer)
 	}
 
 	if !ok && o.backstop != nil {

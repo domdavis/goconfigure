@@ -173,7 +173,7 @@ func TestOptions_Parse(t *testing.T) {
 		err := opts.Parse(nil)
 
 		expected := "config error: failed to register flags: failed to set " +
-			"short flag: invalid option type: []string"
+			"short flag: invalid option type for flag \"s\": []string"
 
 		if err == nil || err.Error() != expected {
 			t.Errorf("unexpected error parsing options: %v", err)

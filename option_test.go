@@ -146,7 +146,8 @@ func TestRegisterFlags(t *testing.T) {
 		opt.LongFlag("long")
 		err := opt.RegisterFlags(flag.CommandLine)
 
-		expected := "failed to set long flag: invalid option type: []string"
+		expected := "failed to set long flag: invalid option type for flag " +
+			"\"long\": []string"
 		if err == nil || err.Error() != expected {
 			t.Errorf("unexpected error registering flags: %v", err)
 		}
@@ -158,7 +159,8 @@ func TestRegisterFlags(t *testing.T) {
 		opt.ShortFlag('s')
 		err := opt.RegisterFlags(flag.CommandLine)
 
-		expected := "failed to set short flag: invalid option type: []string"
+		expected := "failed to set short flag: invalid option type for flag " +
+			"\"s\": []string"
 		if err == nil || err.Error() != expected {
 			t.Errorf("unexpected error registering flags: %v", err)
 		}
