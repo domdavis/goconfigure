@@ -22,6 +22,14 @@ type Options interface {
 	// from a file.
 	ParseUsing(option Option) error
 
+	// NArg is the number of arguments remaining after flags have been
+	// processed. Calling NArg before Parse will simply return 0.
+	NArg() int
+
+	// Args returns the non-flag command-line arguments. Calling Args before
+	// calling Parse will simply return an empty slice.
+	Args() []string
+
 	// Usage displays the usage information for this set of options to STDERR.
 	Usage()
 
@@ -96,6 +104,14 @@ func (o *options) ParseUsing(option Option) error {
 	}
 
 	return nil
+}
+
+func (o *options) NArg() int {
+	return o.flags.NArg()
+}
+
+func (o *options) Args() []string {
+	return o.flags.Args()
 }
 
 func (o *options) Usage() {

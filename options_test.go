@@ -292,6 +292,54 @@ func TestOptions_ParseUsing(t *testing.T) {
 	})
 }
 
+func TestOptions_NArg(t *testing.T) {
+	t.Run("NArgs doesn't fail if Parse hasn't been called", func(t *testing.T) {
+		opts := goconfigure.NewOptionsWithArgs([]string{"command"})
+
+		n := opts.NArg()
+
+		if n != 0 {
+			t.Errorf("Unexpected number of NArgs: %d", n)
+		}
+	})
+
+	t.Run("Args doesn't fail if Parse hasn't been called", func(t *testing.T) {
+		opts := goconfigure.NewOptionsWithArgs([]string{"command"})
+
+		a := opts.Args()
+
+		if len(a) != 0 {
+			t.Errorf("Unexpected Args: %d", a)
+		}
+	})
+
+	t.Run("NArgs returns the number of extra arguments", func(t *testing.T) {
+		opts := goconfigure.NewOptionsWithArgs([]string{"command"})
+		if err := opts.Parse(nil); err != nil {
+			t.Errorf("Unxpted error parsing arguments: %s", err)
+		}
+
+		n := opts.NArg()
+
+		if n != 1 {
+			t.Errorf("Unexpected number of NArgs: %d", n)
+		}
+	})
+
+	t.Run("Args returns the extra arguments", func(t *testing.T) {
+		opts := goconfigure.NewOptionsWithArgs([]string{"command"})
+		if err := opts.Parse(nil); err != nil {
+			t.Errorf("Unxpted error parsing arguments: %s", err)
+		}
+
+		a := opts.Args()
+
+		if len(a) != 1 || a[0] != "command" {
+			t.Errorf("Unexpected Args: %s", a)
+		}
+	})
+}
+
 func TestOptions_Usage(t *testing.T) {
 	t.Run("An empty options wont panic when running usage", func(t *testing.T) {
 		opts := goconfigure.NewOptions()
