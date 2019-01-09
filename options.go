@@ -34,7 +34,7 @@ type Options interface {
 	Usage()
 
 	// UsageString building of custom usage output by providing just the usage
-	//
+	// details for the defined options.
 	UsageString() string
 }
 
